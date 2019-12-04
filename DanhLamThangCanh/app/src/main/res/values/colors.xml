@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#B81010</color>
+    <color name="colorAccent">#CCC</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorBackgroundTrangChu">#CCC</color>
+    <color name="transparentBackgroudLogin">#66000000</color>
+    <color name="colorFacebook">#CC189ACA</color>
+    <color name="colorGoogle">#CCCE0808</color>
+    <color name="colorWhite">#FFFFFF</color>
+
+
+    <color name="grey_40">#999999</color>
+    <color name="grey_60">#666666</color>
+    <color name="grey_80">#37474F</color>
+    <color name="grey_90">#263238</color>
+
+    <color name="red_300">#E57373</color>
+    <color name="red_400">#EF5350</color>
+</resources>
