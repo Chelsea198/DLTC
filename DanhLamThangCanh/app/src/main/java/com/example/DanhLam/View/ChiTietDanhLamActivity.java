@@ -1,6 +1,8 @@
 package com.example.DanhLam.View;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -24,6 +26,8 @@ import com.example.DanhLam.Adapters.AdapterRecyclerHinhAnh;
 import com.example.DanhLam.Control.BinhLuanController;
 import com.example.DanhLam.Model.DanhLamThangCanhModel;
 import com.example.DanhLam.R;
+import com.example.DanhLam.View.Fragment.LoginFragment;
+import com.example.DanhLam.View.Fragment.UserFragment;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -69,7 +73,6 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
     BinhLuanController binhLuanController;
     FloatingActionButton fabAdd;
     String UID;
-
 
 
     @Override
@@ -254,8 +257,6 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
                     startActivityForResult(iBinhLuan,BINHLUAN_CODE_RESULT);
                 }else {
                     Toast.makeText(ChiTietDanhLamActivity.this,"Bạn Cần Đăng Nhập",Toast.LENGTH_SHORT).show();
-                    Intent iDangNhap=new Intent(ChiTietDanhLamActivity.this,HomeLoginActivity.class);
-                    startActivityForResult(iDangNhap,BINHLUAN_CODE_RESULT);
                 }
                 break;
             case  R.id.cardViewYeuThich:
@@ -285,7 +286,6 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
                                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                                     String value = dataSnapshot1.getValue(String.class);
                                     String key = dataSnapshot1.getKey();
-                                    Log.d("key", key);
                                     if (danhLamThangCanhModel.getMadanhlam().equals(value)) {
                                         DatabaseReference remove = FirebaseDatabase.getInstance().getReference().child("yeuthichs").child(UID).child(key);
                                         remove.removeValue();
@@ -305,8 +305,6 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
                     }
                 }else{
                     Toast.makeText(ChiTietDanhLamActivity.this,"Bạn Cần Đăng Nhập",Toast.LENGTH_SHORT).show();
-                    Intent iDangNhap=new Intent(ChiTietDanhLamActivity.this,HomeLoginActivity.class);
-                    startActivityForResult(iDangNhap,BINHLUAN_CODE_RESULT);
                 }
 
 
@@ -357,8 +355,7 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
                 }
                 else  {
                     Toast.makeText(ChiTietDanhLamActivity.this,"Bạn Cần Đăng Nhập",Toast.LENGTH_SHORT).show();
-                    Intent iDangNhap=new Intent(ChiTietDanhLamActivity.this,HomeLoginActivity.class);
-                    startActivity(iDangNhap);
+
 
                 }
 

@@ -1,5 +1,6 @@
 package com.example.DanhLam.View;
 
+import com.example.DanhLam.View.Fragment.ManagerFragment;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -96,7 +97,7 @@ public class PostBaiActivity extends AppCompatActivity implements View.OnClickLi
 
                 String maDLTC=getIntent().getStringExtra("maDanhLam");
                 postBaiController.NewPost(maDLTC, hinhDanhLam);
-                Intent iTrangChu=new Intent(PostBaiActivity.this,TrangChuActivity.class);
+                Intent iTrangChu=new Intent(PostBaiActivity.this, ManagerFragment.class);
                 startActivity(iTrangChu);
 
             }

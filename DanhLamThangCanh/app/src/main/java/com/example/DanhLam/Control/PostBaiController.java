@@ -101,13 +101,16 @@ public class PostBaiController {
         for(Uri hinh : hinhDanhLam){
             if (hinh != null) {
                 FirebaseStorage.getInstance().getReference().child("hinhdanhlam/"+hinh.getLastPathSegment()).putFile(hinh);
-                //Node hình quán ăn
+                //Node hình danh lam
                 nootRoot.child("hinhanhdanhlams").child(maDLCT).push().setValue(hinh.getLastPathSegment());
-                Toast.makeText(mContext,"Đăng bài thành công!",Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext,"Thêm hình ảnh thành công!",Toast.LENGTH_LONG).show();
+                FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+                String UID=user.getUid();
+                nootRoot.child("hinhanhdonggop").child(UID).push().setValue(hinh.getLastPathSegment());
             }
             else
             {
-                Toast.makeText(mContext,"Đăng bài thành công!",Toast.LENGTH_LONG).show();
+                //Toast.makeText(mContext,"Đăng bài thành công!",Toast.LENGTH_LONG).show();
             }
         }
     }

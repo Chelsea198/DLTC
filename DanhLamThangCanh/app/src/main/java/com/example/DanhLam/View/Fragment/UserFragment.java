@@ -19,6 +19,7 @@ import com.example.DanhLam.Control.Interfaces.DanhLamInterface;
 import com.example.DanhLam.Model.DanhLamThangCanhModel;
 import com.example.DanhLam.R;
 import com.example.DanhLam.View.DanhLamYeuThichActivity;
+import com.example.DanhLam.View.HinhAnhDongGopActivity;
 import com.example.DanhLam.View.HomeLoginActivity;
 import com.example.DanhLam.View.ProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,6 +75,13 @@ public class UserFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent iYeuThich=new Intent(view.getContext(), DanhLamYeuThichActivity.class);
+                startActivity(iYeuThich);
+            }
+        });
+        view.findViewById(R.id.btnHinhAnhDongGop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent iYeuThich=new Intent(view.getContext(), HinhAnhDongGopActivity.class);
                 startActivity(iYeuThich);
             }
         });

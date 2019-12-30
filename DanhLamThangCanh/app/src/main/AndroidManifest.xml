@@ -78,6 +78,9 @@
         <activity android:name=".View.DanhLamYeuThichActivity">
 
         </activity>
+        <activity android:name=".View.HinhAnhDongGopActivity">
+
+        </activity>
 
     </application>
 
