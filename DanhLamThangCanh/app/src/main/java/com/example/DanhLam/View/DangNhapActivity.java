@@ -105,10 +105,6 @@ public class DangNhapActivity extends AppCompatActivity implements GoogleApiClie
             case R.id.btnLoginFB:
                 dangNhapFB();
                 break;
-            case R.id.txtDangKyMoi:
-                Intent iDangky=new Intent(DangNhapActivity.this,DangKiActivity.class);
-                startActivity(iDangky);
-                break;
             case R.id.txtQuenMatKhau:
                 Intent iKhoiPhucMatKhau=new Intent(DangNhapActivity.this,KhoiPhucMatKhauActivity.class);
                 startActivity(iKhoiPhucMatKhau);

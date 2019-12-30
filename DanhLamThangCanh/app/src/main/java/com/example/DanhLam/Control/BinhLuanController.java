@@ -38,7 +38,6 @@ public class BinhLuanController {
                 danhsachBinhLuan.add(binhLuanCon);
                 adapterBinhLuan.notifyDataSetChanged();
 
-
             }
         };
 

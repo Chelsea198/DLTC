@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,12 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginFragment extends Fragment {
     TextInputEditText editTextCountryCode, editTextPhone;
     AppCompatButton buttonContinue;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     public LoginFragment(){}
 
     @Nullable
@@ -30,6 +38,18 @@ public class LoginFragment extends Fragment {
         editTextCountryCode = view.findViewById(R.id.editTextCountryCode);
         editTextPhone = view.findViewById(R.id.editTextPhone);
         buttonContinue = view.findViewById(R.id.buttonContinue);
+
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Intent intent = new Intent(getContext(),UserFragment.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
         buttonContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,23 +64,20 @@ public class LoginFragment extends Fragment {
 
                 String phoneNumber = code + number;
 
-                Intent intent = new Intent(view.getContext(), VerifyPhoneActivity.class);
-                intent.putExtra("phoneNumber", phoneNumber);
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(),VerifyFragment.class);
+//                intent.putExtra("phoneNumber", phoneNumber);
+//                startActivity(intent);
+                VerifyFragment fr = new VerifyFragment();
+                Bundle args = new Bundle();
+                args.putString("phoneNumber",phoneNumber);
 
+                fr.setArguments(args);
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.replace(R.id.frame_container, fr);
+                fragmentTransaction.commit();
             }
         });
-        return view;
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Intent intent = new Intent(getContext(), ProfileActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-            startActivity(intent);
-        }
     }
 }

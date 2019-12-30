@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.example.DanhLam.Adapters.AdapterDanhLamYeuThich;
 import com.example.DanhLam.Adapters.AdapterRecyclerLoadDanhLam;
 import com.example.DanhLam.Control.Interfaces.DanhLamInterface;
 import com.example.DanhLam.Model.DanhLamThangCanhModel;
@@ -28,7 +29,6 @@ public class DanhLamController {
         recyclerView.setLayoutManager(layoutManager);
         adapterRecyclerLoadDanhLam = new AdapterRecyclerLoadDanhLam(context, danhLamThangCanhModelList, R.layout.custom_layout_recyclerview_danhlam);
         recyclerView.setAdapter(adapterRecyclerLoadDanhLam);
-
     }
 
     public void getDanhSachDanhLamThangCanhController(Context context,RecyclerView recyclerOdau, boolean isQuery, String query){
@@ -53,6 +53,7 @@ public class DanhLamController {
         }
 
     }
+
 
 
 }

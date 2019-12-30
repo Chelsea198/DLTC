@@ -10,7 +10,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Queue;
 
 public class BinhLuanModel {
 
@@ -73,8 +76,8 @@ public class BinhLuanModel {
     }
     public void getDanhSachBinhLuan(final BinhLuanInterface binhLuanInterface)
     {
-        DatabaseReference nodeBinhLuan= FirebaseDatabase.getInstance().getReference().child("binhluandanhlams").child(idDanhlam);
-        nodeBinhLuan.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query queryBinhLuan=FirebaseDatabase.getInstance().getReference().child("binhluandanhlams").child(idDanhlam).orderByChild("mark");
+        queryBinhLuan.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> children=dataSnapshot.getChildren();

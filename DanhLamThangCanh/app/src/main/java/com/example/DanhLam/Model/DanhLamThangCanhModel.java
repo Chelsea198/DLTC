@@ -3,15 +3,22 @@ package com.example.DanhLam.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.DanhLam.Control.Interfaces.DanhLamInterface;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class DanhLamThangCanhModel implements  Parcelable{
     String tendanhlam,madanhlam,diachi,gioithieu,hinhanh;
@@ -145,6 +152,33 @@ public class DanhLamThangCanhModel implements  Parcelable{
     }
     public void getDanhSachDanhLamThangCanh(final DanhLamInterface danhLamInterface) {
 
+//        Query query=FirebaseDatabase.getInstance().getReference().child("danhlamthangcanhs").orderByChild("avgMark");
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot valueDanhLam : dataSnapshot.getChildren())
+//                {
+//
+//                    DanhLamThangCanhModel danhLamThangCanhModel = valueDanhLam.getValue(DanhLamThangCanhModel.class);
+//                    danhLamThangCanhModel.setMadanhlam(valueDanhLam.getKey());
+//                    //Lấy danh sách hình ảnh danh lam  theo mã
+//                    DataSnapshot dataSnapshotHinhDanhLam = dataSnapshot.child("hinhanhdanhlams").child(danhLamThangCanhModel.getMadanhlam());
+//                    ArrayList<String> hinhAnhList = new ArrayList<>();
+//                    for (DataSnapshot valueHinhDanhLam : dataSnapshotHinhDanhLam.getChildren()) {
+//                        hinhAnhList.add(valueHinhDanhLam.getValue(String.class));
+//                    }
+//                    Log.d("Hình ảnh list" ,danhLamThangCanhModel.getMadanhlam().toString()+"số lượng hình ảnh" +hinhAnhList.size()+"");
+//                    danhLamThangCanhModel.setHinhanhdanhlam(hinhAnhList);
+//                    danhLamInterface.getDanhSachDanhLamThangCanh(danhLamThangCanhModel);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -210,7 +244,38 @@ public class DanhLamThangCanhModel implements  Parcelable{
     public int describeContents() {
         return 0;
     }
+    public  void getDanhLamYeuThich(final  DanhLamInterface danhLamInterface)
+    {
+        FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
+        final String UID=user.getUid();
+        ValueEventListener valueEventListener=new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot dataSnapshotYeuThich=dataSnapshot.child("yeuthichs").child(UID);
+                for(DataSnapshot maDanhLam:dataSnapshotYeuThich.getChildren())
+                {
+                    String maDLTC=maDanhLam.getValue(String.class);
+                    DataSnapshot dataSnapshotDanhLam = dataSnapshot.child("danhlamthangcanhs").child(maDLTC);
+                    DanhLamThangCanhModel danhLamThangCanhModel=dataSnapshotDanhLam.getValue(DanhLamThangCanhModel.class);
+                    danhLamThangCanhModel.setMadanhlam(maDLTC);
+                    DataSnapshot dataSnapshotHinhDanhLam = dataSnapshot.child("hinhanhdanhlams").child(maDLTC);
+                    ArrayList<String> hinhAnhList = new ArrayList<>();
+                    for (DataSnapshot valueHinhDanhLam : dataSnapshotHinhDanhLam.getChildren()
+                    ) {
+                        hinhAnhList.add(valueHinhDanhLam.getValue(String.class));
+                    }
+                    danhLamThangCanhModel.setHinhanhdanhlam(hinhAnhList);
+                    danhLamInterface.getDanhSachDanhLamThangCanh(danhLamThangCanhModel);
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        nodeRoot.addListenerForSingleValueEvent(valueEventListener);
+    }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 

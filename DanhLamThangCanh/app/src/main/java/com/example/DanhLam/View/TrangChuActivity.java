@@ -21,7 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 public class TrangChuActivity extends AppCompatActivity{
     public static int CALLBACK_LOGIN_CODE=99;
     RecyclerView recyclerViewdata;
-    FloatingActionButton fab;
     SearchView searchView;
     DanhLamController danhLamController;
     Button btnDangXuat;

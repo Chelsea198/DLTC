@@ -60,10 +60,7 @@ public class KhoiPhucMatKhauActivity extends AppCompatActivity implements View.O
                 }
                 break;
 
-            case R.id.txtDangKyKP:
-                Intent iDangKy=new Intent(KhoiPhucMatKhauActivity.this,DangKiActivity.class);
-                startActivity(iDangKy);
-                break;
+
         }
     }
     public boolean kiemTraEmail(String email)

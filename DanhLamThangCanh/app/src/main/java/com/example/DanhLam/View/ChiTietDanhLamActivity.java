@@ -6,15 +6,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,19 +31,33 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     static int BINHLUAN_CODE_RESULT=1998;
     TextView txtTenDanhLamThangCanh,txtDiaChiDanhLamThangCanh,txtDanhGia,txtDanhDau,txtTieuDeToolbar,txtGioiThieu,txtYeuThich;
     DanhLamThangCanhModel danhLamThangCanhModel;
     ImageView imgHinhAnhDanhLam, imgYeuThich,imgDanhDau;
+
+    CardView cardViewYeuThich;
+
     MapFragment mapFragment;
     GoogleMap googleMap;
     RecyclerView recyclerViewAnhDep,recyclerViewBinhLuan;
@@ -52,30 +68,66 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
     Context mContext;
     BinhLuanController binhLuanController;
     FloatingActionButton fabAdd;
+    String UID;
+
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_chitietdanhlam);
-
         danhLamThangCanhModel=getIntent().getParcelableExtra("danhlamthangcanh");
+        Log.d("List",danhLamThangCanhModel.getHinhanhdanhlam().size()+"");
         mContext=this;
         user =FirebaseAuth.getInstance().getCurrentUser();
+
         AddControl();
         HienThiChiTietDanhLam();
         HienThiHinhAnhDep();
-
         AddEvents();
         recyclerViewBinhLuan.setLayoutManager(new LinearLayoutManager(this));
         binhLuanController= new BinhLuanController(recyclerViewBinhLuan,this,danhLamThangCanhModel.getMadanhlam(),R.layout.custom_layout_binhluan);
         binhLuanController.GetDanhSachBinhLuan();
+        CheckYeuThich();
+
+    }
+    public  void CheckYeuThich()
+    {
+        if (user!=null)
+        {
+            UID= user.getUid();
+            DatabaseReference check=FirebaseDatabase.getInstance().getReference().child("yeuthichs").child(UID);
+            check.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot dataSnapshot1:dataSnapshot.getChildren())
+                    {
+                        Log.d("username 1",UID);
+                        String index=dataSnapshot1.getValue(String.class);
+                        if(danhLamThangCanhModel.getMadanhlam().equals(index))
+                        {
+                            imgYeuThich.setImageResource(R.drawable.like_click);
+                            imgYeuThich.setTag("1");
+                            break;
+                        }
+
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
     }
     public  void AddControl(){
         txtGioiThieu=findViewById(R.id.txtGioiThieu);
         txtTieuDeToolbar=findViewById(R.id.txtTieuDeToolbar);
         txtYeuThich=findViewById(R.id.txtYeuThich);
         txtDanhGia=findViewById(R.id.txtDanhGia);
+
+        cardViewYeuThich=findViewById(R.id.cardViewYeuThich);
 
         txtDanhDau=findViewById(R.id.txtDanhDau);
         imgDanhDau=findViewById(R.id.imgDanhDau);
@@ -158,13 +210,13 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
 
     }
     public void AddEvents(){
+       txtDanhDau.setOnClickListener(this);
+       imgDanhDau.setOnClickListener(this);
+       txtDanhGia.setOnClickListener(this);
+       fabAdd.setOnClickListener(this);
 
-        txtYeuThich.setOnClickListener(this);
-        txtDanhDau.setOnClickListener(this);
-        imgYeuThich.setOnClickListener(this);
-        imgDanhDau.setOnClickListener(this);
-        txtDanhGia.setOnClickListener(this);
-        fabAdd.setOnClickListener(this);
+        cardViewYeuThich.setOnClickListener(this);
+
     }
 
     @Override
@@ -204,20 +256,60 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
                     Toast.makeText(ChiTietDanhLamActivity.this,"Bạn Cần Đăng Nhập",Toast.LENGTH_SHORT).show();
                     Intent iDangNhap=new Intent(ChiTietDanhLamActivity.this,HomeLoginActivity.class);
                     startActivityForResult(iDangNhap,BINHLUAN_CODE_RESULT);
-
                 }
                 break;
-            case  R.id.txtYeuThich:
-                if (imgYeuThich.getTag() == "0")
-                {
-                    imgYeuThich.setImageResource(R.drawable.like_click);
-                    imgYeuThich.setTag("1");
+            case  R.id.cardViewYeuThich:
+                if (user!=null) {
+                    if (imgYeuThich.getTag().toString().equals("0")) {
+                        UID = user.getUid();
+                        DatabaseReference addYeuThich = FirebaseDatabase.getInstance().getReference().child("yeuthichs").child(UID);
+                        final String ma = addYeuThich.push().getKey();
+
+                        addYeuThich.child(ma).setValue(danhLamThangCanhModel.getMadanhlam()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+
+                            }
+                        });
+                        imgYeuThich.setImageResource(R.drawable.like_click);
+                        imgYeuThich.setTag("1");
+                        break;
+                    } else if (imgYeuThich.getTag().toString().equals("1")) {
+
+                        UID = user.getUid();
+                        Log.d("username 3", UID);
+                        DatabaseReference b = FirebaseDatabase.getInstance().getReference().child("yeuthichs").child(UID);
+                        b.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                    String value = dataSnapshot1.getValue(String.class);
+                                    String key = dataSnapshot1.getKey();
+                                    Log.d("key", key);
+                                    if (danhLamThangCanhModel.getMadanhlam().equals(value)) {
+                                        DatabaseReference remove = FirebaseDatabase.getInstance().getReference().child("yeuthichs").child(UID).child(key);
+                                        remove.removeValue();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        imgYeuThich.setImageResource(R.drawable.like);
+                        imgYeuThich.setTag("0");
+                        break;
+                    }
+                }else{
+                    Toast.makeText(ChiTietDanhLamActivity.this,"Bạn Cần Đăng Nhập",Toast.LENGTH_SHORT).show();
+                    Intent iDangNhap=new Intent(ChiTietDanhLamActivity.this,HomeLoginActivity.class);
+                    startActivityForResult(iDangNhap,BINHLUAN_CODE_RESULT);
                 }
-                else
-                {
-                    imgYeuThich.setImageResource(R.drawable.like);
-                    imgYeuThich.setTag("0");
-                }
+
+
                 break;
             case R.id.txtDanhDau:
                 if (imgDanhDau.getTag() == "0")
@@ -231,18 +323,18 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
                     imgDanhDau.setTag("0");
                 }
                 break;
-            case  R.id.imgYeuThich:
-                if (imgYeuThich.getTag() == "0")
-                {
-                    imgYeuThich.setImageResource(R.drawable.like_click);
-                    imgYeuThich.setTag("1");
-                }
-                else
-                {
-                    imgYeuThich.setImageResource(R.drawable.like);
-                    imgYeuThich.setTag("0");
-                }
-                break;
+//            case  R.id.imgYeuThich:
+//                if (imgYeuThich.getTag() == "0")
+//                {
+//                    imgYeuThich.setImageResource(R.drawable.like_click);
+//                    imgYeuThich.setTag("1");
+//                }
+//                else
+//                {
+//                    imgYeuThich.setImageResource(R.drawable.like);
+//                    imgYeuThich.setTag("0");
+//                }
+//                break;
             case R.id.imgDanhDau:
                 if (imgDanhDau.getTag() == "0")
                 {
@@ -274,5 +366,6 @@ public class ChiTietDanhLamActivity extends AppCompatActivity implements OnMapRe
 
         }
     }
+
 
 }

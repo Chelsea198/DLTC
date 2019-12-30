@@ -57,7 +57,6 @@
         </activity>
         <activity android:name="com.example.DanhLam.View.PostBaiActivity"></activity>
         <activity android:name="com.example.DanhLam.View.DangNhapActivity" />
-        <activity android:name="com.example.DanhLam.View.DangKiActivity" />
         <activity android:name="com.example.DanhLam.View.KhoiPhucMatKhauActivity" />
         <activity android:name="com.example.DanhLam.View.TrangChuActivity" />
         <activity android:name="com.example.DanhLam.View.ChiTietDanhLamActivity" />
@@ -76,6 +75,10 @@
         <activity android:name=".View.Fragment.ManagerFragment">
 
         </activity>
+        <activity android:name=".View.DanhLamYeuThichActivity">
+
+        </activity>
+
     </application>
 
 </manifest>

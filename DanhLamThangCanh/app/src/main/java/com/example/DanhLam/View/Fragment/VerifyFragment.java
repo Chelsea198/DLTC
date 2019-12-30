@@ -1,21 +1,24 @@
-package com.example.DanhLam.View;
+package com.example.DanhLam.View.Fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatButton;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.DanhLam.R;
-import com.example.DanhLam.View.Fragment.UserFragment;
+import com.example.DanhLam.View.VerifyPhoneActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskExecutors;
@@ -28,8 +31,7 @@ import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.concurrent.TimeUnit;
 
-public class VerifyPhoneActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
-
+public class VerifyFragment  extends Fragment implements FirebaseAuth.AuthStateListener{
     private String verificationId;
     private FirebaseAuth mAuth;
 
@@ -37,24 +39,32 @@ public class VerifyPhoneActivity extends AppCompatActivity implements FirebaseAu
     TextInputEditText editText;
     AppCompatButton buttonSignIn;
     public static  int RESULT_LOGIN_SUCCESS=33;
+    public VerifyFragment()
+    {
 
+    }
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_verification_code);
+    }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final View view= inflater.inflate(R.layout.activity_verification_code,container,false);
         mAuth = FirebaseAuth.getInstance();
 
-        progressBar = findViewById(R.id.progressbar);
-        editText = findViewById(R.id.editTextCode);
-        buttonSignIn = findViewById(R.id.buttonSignIn);
-
-        String phoneNumber = getIntent().getStringExtra("phoneNumber");
+        progressBar = view.findViewById(R.id.progressbar);
+        editText = view.findViewById(R.id.editTextCode);
+        buttonSignIn = view.findViewById(R.id.buttonSignIn);
+        Bundle bundle=getArguments();
+       // String phoneNumber = getActivity().getIntent().getStringExtra("phoneNumber");
+        String phoneNumber=bundle.getString("phoneNumber");
         sendVerificationCode(phoneNumber);
 
 
         // save phone number
-        SharedPreferences prefs = getApplicationContext().getSharedPreferences("USER_PREF",
+        SharedPreferences prefs = view.getContext().getSharedPreferences("USER_PREF",
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("phoneNumber", phoneNumber);
@@ -76,8 +86,8 @@ public class VerifyPhoneActivity extends AppCompatActivity implements FirebaseAu
             }
         });
 
+        return view;
     }
-
     private void verifyCode(String code) {
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
         signInWithCredential(credential);
@@ -90,13 +100,16 @@ public class VerifyPhoneActivity extends AppCompatActivity implements FirebaseAu
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-                            Intent intent = new Intent(VerifyPhoneActivity.this, ProfileActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-                            startActivity(intent);
+                            UserFragment fr = new UserFragment();
+                            Bundle args = new Bundle();
+                            fr.setArguments(args);
+                            FragmentManager fm = getFragmentManager();
+                            FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                            fragmentTransaction.replace(R.id.frame_container, fr);
+                            fragmentTransaction.commit();
 
                         } else {
-                            Toast.makeText(VerifyPhoneActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
                         }
                     }
@@ -136,7 +149,7 @@ public class VerifyPhoneActivity extends AppCompatActivity implements FirebaseAu
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
-            Toast.makeText(VerifyPhoneActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
             progressBar.setVisibility(View.GONE);
         }
     };
@@ -146,8 +159,8 @@ public class VerifyPhoneActivity extends AppCompatActivity implements FirebaseAu
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if(user != null){
             Intent returnIntent = new Intent();
-            setResult(RESULT_LOGIN_SUCCESS,returnIntent);
-            finish();
+            getActivity().setResult(RESULT_LOGIN_SUCCESS,returnIntent);
+            getActivity().finish();
         }
 
     }
